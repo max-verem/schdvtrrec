@@ -18,6 +18,9 @@ class CSchdVtrRecDlg : public CDialog
 public:
 	CSchdVtrRecDlg(CWnd* pParent = NULL);	// standard constructor
 
+	void UpdateStatus(void);
+	void UpdateTC(void);
+
 // Dialog Data
 	//{{AFX_DATA(CSchdVtrRecDlg)
 	enum { IDD = IDD_SCHDVTRREC_DIALOG };
@@ -33,6 +36,8 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
+	HICON m_icon_fail;
+	HICON m_icon_ok;
 	CMenu m_TrayMenu;
 	NOTIFYICONDATA tnd;
 	CListCtrl* schedule_list;

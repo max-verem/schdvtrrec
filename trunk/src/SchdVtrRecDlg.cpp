@@ -15,6 +15,109 @@ static char THIS_FILE[] = __FILE__;
 
 extern CSchdVtrRecApp theApp;
 
+#include <vtr_cmd.h>
+#include <vtr_srv.h>
+#include <mytimecode.h>
+
+
+/*
+ * VTR state callback function
+ *
+ */
+void cb_vtr(void *desc, int state_id, int state_val, void *cookie)
+{
+	int i = 0, v;
+	int vtr_state = 0; 
+	int vtr_tc = 0; 
+
+	/* is online */
+	vtr_srv_get(desc, VTR_SRV_STATE_ONLINE, &v);
+	if(0 != v)
+	{
+		vtr_state |= VTR_ONLINE;
+
+		/* tape present */
+		vtr_srv_get
+		(
+			desc, 
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_TAPE_UNTHREADED, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_TAPE_LOADED;
+
+		/* vtr in "remote" */
+		vtr_srv_get
+		(
+			desc, 
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_REC_INHIB, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_RECORD_NOT_INHIBITED;
+
+		/* vtr in "remote" */
+		vtr_srv_get
+		(
+			desc,
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_LOCAL, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_REMOTE_CONTROL;
+
+		/* update timecode */
+		vtr_srv_get(desc, VTR_SRV_STATE_TC, &vtr_tc);
+	};
+
+	/* check status changed */
+	if(vtr_state != theApp.vtr_state)
+	{
+		i = 1;
+		theApp.vtr_state = vtr_state;
+		((CSchdVtrRecDlg*)cookie)->UpdateStatus();
+	};
+
+	/* tc update sync */
+	if((0 != i)||(vtr_tc != theApp.vtr_tc))
+	{
+		theApp.vtr_tc = vtr_tc;
+		((CSchdVtrRecDlg*)cookie)->UpdateTC();
+	};
+};
+
+void CSchdVtrRecDlg::UpdateStatus(void)
+{
+	CStatic* s;
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_ONLINE);
+	s->SetIcon((theApp.vtr_state & VTR_ONLINE)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_TAPE_LOADED);
+	s->SetIcon((theApp.vtr_state & VTR_TAPE_LOADED)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_RECORD_NOT_INHIBITED);
+	s->SetIcon((theApp.vtr_state & VTR_RECORD_NOT_INHIBITED)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_REMOTE_CONTROL);
+	s->SetIcon((theApp.vtr_state & VTR_REMOTE_CONTROL)?m_icon_ok:m_icon_fail);
+};
+
+void CSchdVtrRecDlg::UpdateTC(void)
+{
+	char TC[128];
+
+	if(theApp.vtr_state & VTR_ONLINE)
+		tc_bcd2txt((unsigned long)theApp.vtr_tc, TC);
+	else
+		TC[0] = 0;
+
+	((CStatic*)GetDlgItem(IDC_TC))->SetWindowText(TC);
+};
+
 /* --------------------------------------------------------------------------
 
 	tray icon code based on 
@@ -64,6 +167,16 @@ void CSchdVtrRecDlg::OnSize(UINT nType, int cx, int cy)
 
 void CSchdVtrRecDlg::OnDestroy() 
 {
+	if(NULL != 	theApp.vtr)
+	{
+		/* stop service */
+		vtr_srv_start(theApp.vtr);
+
+		/* destroy service */
+		vtr_srv_destroy(theApp.vtr);
+	};
+
+
 	CDialog::OnDestroy();
 	Shell_NotifyIcon(NIM_DELETE,&tnd);
 };
@@ -173,6 +286,8 @@ CSchdVtrRecDlg::CSchdVtrRecDlg(CWnd* pParent /*=NULL*/)
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_icon_ok = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_OK);
+	m_icon_fail = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_FAIL);
 }
 
 void CSchdVtrRecDlg::DoDataExchange(CDataExchange* pDX)
@@ -254,7 +369,61 @@ BOOL CSchdVtrRecDlg::OnInitDialog()
 	/* show window hidden */	
 	PostMessage(WM_COMMAND, ID_PROGRAM_HIDE, 0);
 
-	SetTimer(0,1000,NULL);
+	/* setup timer */
+//	SetTimer(0,1000,NULL);
+
+	/* init VTR */
+	theApp.vtr = vtr_srv_create();
+
+	/* setup port */
+	vtr_srv_set(theApp.vtr,
+		VTR_SRV_CONF_SERIAL_PORT,
+		theApp.m_opts.m_serial_port_name);
+
+	/* setup callback function */
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_MODEL_ID, VTR_SRV_STATE_ALL_VAL,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_ONLINE, VTR_SRV_STATE_ALL_VAL,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_TC, VTR_SRV_STATE_ALL_VAL,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_TAPE_UNTHREADED,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_LOCAL,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_RECORD,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_PLAY,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_SERVO_LOCK,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_STANDBY,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_EJECT,
+		cb_vtr, this);
+
+	/* run service */
+	vtr_srv_start(theApp.vtr);
+
+	/* run callback */
+	cb_vtr(theApp.vtr, 0, 0, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

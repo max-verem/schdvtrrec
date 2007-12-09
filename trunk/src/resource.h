@@ -21,6 +21,11 @@
 #define IDC_BUTTON_REW4                 1008
 #define IDC_BUTTON_REW5                 1009
 #define IDC_BUTTON_REW6                 1010
+#define IDC_ICON_VTR_ONLINE             1011
+#define IDC_ICON_VTR_TAPE_LOADED        1012
+#define IDC_ICON_VTR_RECORD_NOT_INHIBITED 1013
+#define IDC_ICON_VTR_REMOTE_CONTROL     1014
+#define IDC_TC                          1015
 #define ID_PROGRAM_SHOW                 32771
 #define ID_PROGRAM_HIDE                 32772
 #define ID_PROGRAM_EXIT                 32773
@@ -32,7 +37,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
