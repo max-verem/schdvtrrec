@@ -110,6 +110,10 @@ SOURCE=.\SchdVtrRecDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SchdVtrRecIni.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -132,6 +136,10 @@ SOURCE=.\SchdVtrRecConf.h
 # Begin Source File
 
 SOURCE=.\SchdVtrRecDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SchdVtrRecIni.h
 # End Source File
 # Begin Source File
 

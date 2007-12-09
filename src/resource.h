@@ -16,11 +16,17 @@
 #define IDC_STATUS_VTR3                 1003
 #define IDC_STATUS_VTR4                 1004
 #define IDC_BUTTON_REW                  1005
+#define IDC_BUTTON_REWIND               1005
 #define IDC_BUTTON_REW2                 1006
+#define IDC_BUTTON_STOP                 1006
 #define IDC_BUTTON_REW3                 1007
+#define IDC_BUTTON_PLAY                 1007
 #define IDC_BUTTON_REW4                 1008
+#define IDC_BUTTON_RECORD               1008
 #define IDC_BUTTON_REW5                 1009
+#define IDC_BUTTON_FASTF                1009
 #define IDC_BUTTON_REW6                 1010
+#define IDC_BUTTON_EJECT                1010
 #define IDC_ICON_VTR_ONLINE             1011
 #define IDC_ICON_VTR_TAPE_LOADED        1012
 #define IDC_ICON_VTR_RECORD_NOT_INHIBITED 1013
