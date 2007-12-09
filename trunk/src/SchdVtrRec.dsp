@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "C:\projects\airforce\src\vtr_cmd" /I "C:\projects\airforce\src\vtr_srv" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "C:\projects\airforce\src\vtr_cmd" /I "C:\projects\airforce\src\vtr_srv" /I "C:\projects\airforce\src\mytimecode" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x422 /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../install/Release/SchdVtrRec.exe" /libpath:"C:\projects\airforce\temp\Release\vtr_cmd" /libpath:"C:\projects\airforce\temp\Release\vtr_srv"
+# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../install/Release/SchdVtrRec.exe" /libpath:"C:\projects\airforce\temp\Release\vtr_cmd" /libpath:"C:\projects\airforce\temp\Release\vtr_srv" /libpath:"C:\projects\airforce\temp\Release\mytimecode"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "SchdVtrRec - Win32 Debug"
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "C:\projects\airforce\src\vtr_cmd" /I "C:\projects\airforce\src\vtr_srv" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "C:\projects\airforce\src\vtr_cmd" /I "C:\projects\airforce\src\vtr_srv" /I "C:\projects\airforce\src\mytimecode" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x422 /d "_DEBUG"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../install/Debug/SchdVtrRec.exe" /pdbtype:sept /libpath:"C:\projects\airforce\temp\Debug\vtr_cmd" /libpath:"C:\projects\airforce\temp\Debug\vtr_srv"
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../install/Debug/SchdVtrRec.exe" /pdbtype:sept /libpath:"C:\projects\airforce\temp\Debug\vtr_cmd" /libpath:"C:\projects\airforce\temp\Debug\vtr_srv" /libpath:"C:\projects\airforce\temp\Debug\mytimecode"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
