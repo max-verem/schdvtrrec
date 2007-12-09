@@ -19,8 +19,8 @@ static char THIS_FILE[]=__FILE__;
 CSchdVtrRecConf::CSchdVtrRecConf()
 {
 	/* set defaults */
-	strcpy(m_serial_port_name, "COM1:");
-	strcpy(m_schedule_file_name, "SchdVtrRec.ini");
+	strcpy(m_serial_port_name, DEFAULT_SERIAL_PORT);
+	strcpy(m_schedule_file_name, DEFAULT_SCHEDULE_FILE);
 	opt = 0;
 }
 

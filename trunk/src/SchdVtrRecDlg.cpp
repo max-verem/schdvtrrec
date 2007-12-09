@@ -311,9 +311,13 @@ BEGIN_MESSAGE_MAP(CSchdVtrRecDlg, CDialog)
 	ON_COMMAND_EX(ID_PROGRAM_EXIT, OnMenuCommand)
 	ON_COMMAND_EX(ID_PROGRAM_HIDE, OnMenuCommand)
 	ON_COMMAND_EX(ID_PROGRAM_ABOUT, OnMenuCommand)
-//	ON_COMMAND_EX(ID_CANCEL_ENCODING, OnMenuCommand)
-//	ON_COMMAND_EX(ID_CLEAR_USED_FLAG, OnMenuCommand)
-//	ON_COMMAND_EX(ID_WATCH2CONVERT_ABOUT, OnMenuCommand)
+
+	ON_COMMAND_EX(IDC_BUTTON_EJECT, OnVtrControlCommand)
+	ON_COMMAND_EX(IDC_BUTTON_REWIND, OnVtrControlCommand)
+	ON_COMMAND_EX(IDC_BUTTON_STOP, OnVtrControlCommand)
+	ON_COMMAND_EX(IDC_BUTTON_PLAY, OnVtrControlCommand)
+	ON_COMMAND_EX(IDC_BUTTON_FASTF, OnVtrControlCommand)
+	ON_COMMAND_EX(IDC_BUTTON_RECORD, OnVtrControlCommand)
 
 	ON_WM_TIMER()
 //	ON_MESSAGE(WM_KICKIDLE, OnKickIdle)
@@ -469,6 +473,48 @@ HCURSOR CSchdVtrRecDlg::OnQueryDragIcon()
   commands processing
 
 -------------------------------------------------------------------------- */
+
+BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
+{
+	BOOL ret = FALSE;
+	int cmd, r;
+
+	switch(id)
+	{
+		case IDC_BUTTON_EJECT:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_EJECT);
+			ret = TRUE;
+			break;
+
+		case IDC_BUTTON_REWIND:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_REWIND);
+			ret = TRUE;
+			break;
+
+		case IDC_BUTTON_STOP:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_STOP);
+			ret = TRUE;
+			break;
+
+		case IDC_BUTTON_PLAY:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_PLAY);
+			ret = TRUE;
+			break;
+
+		case IDC_BUTTON_FASTF:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_FAST_FWD);
+			ret = TRUE;
+			break;
+
+		case IDC_BUTTON_RECORD:
+			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_RECORD);
+			ret = TRUE;
+			break;
+	};
+
+	return ret;
+};
+
 
 BOOL CSchdVtrRecDlg::OnMenuCommand(int id)
 {

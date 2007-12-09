@@ -15,6 +15,7 @@
 #include "resource.h"		// main symbols
 
 #include "SchdVtrRecConf.h"
+#include "SchdVtrRecIni.h"
 
 #define VTR_ONLINE					(1<<0)
 #define VTR_TAPE_LOADED				(1<<1)
@@ -30,7 +31,7 @@ class CSchdVtrRecApp : public CWinApp
 {
 public:
 	CSchdVtrRecConf m_opts;
-
+	CSchdVtrRecIni* m_ini;
 	void* vtr;
 	int vtr_state;
 	int vtr_tc;
@@ -42,6 +43,7 @@ public:
 	//{{AFX_VIRTUAL(CSchdVtrRecApp)
 	public:
 	virtual BOOL InitInstance();
+	virtual int ExitInstance();
 	//}}AFX_VIRTUAL
 
 // Implementation

@@ -30,6 +30,7 @@ CSchdVtrRecApp::CSchdVtrRecApp()
 	vtr = NULL;
 	vtr_state = 0;
 	vtr_tc = 0xFFFFFFFF;
+	m_ini = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,10 @@ BOOL CSchdVtrRecApp::InitInstance()
 	/* parse command line */
 	ParseCommandLine(m_opts);
 
+	/* load ini file */
+	m_ini = new CSchdVtrRecIni(m_opts.m_schedule_file_name);
+
+
 	CSchdVtrRecDlg dlg;
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();
@@ -75,4 +80,15 @@ BOOL CSchdVtrRecApp::InitInstance()
 	// Since the dialog has been closed, return FALSE so that we exit the
 	//  application, rather than start the application's message pump.
 	return FALSE;
+}
+
+int CSchdVtrRecApp::ExitInstance() 
+{
+	if(NULL != m_ini)
+	{
+		delete m_ini;
+		m_ini = NULL;
+	};
+	
+	return CWinApp::ExitInstance();
 }

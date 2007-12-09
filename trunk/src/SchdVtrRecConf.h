@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#define DEFAULT_SERIAL_PORT "COM1:"
+#define DEFAULT_SCHEDULE_FILE "SchdVtrRec.ini"
+
 class CSchdVtrRecConf : public CCommandLineInfo  
 {
 	int opt;

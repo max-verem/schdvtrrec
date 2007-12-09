@@ -57,6 +57,7 @@ protected:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg LRESULT onTrayNotify(WPARAM wParam,LPARAM lParam);
 	afx_msg BOOL OnMenuCommand(int id);
+	afx_msg BOOL OnVtrControlCommand(int id);
 	afx_msg void OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 };
