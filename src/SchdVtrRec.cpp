@@ -27,8 +27,9 @@ END_MESSAGE_MAP()
 
 CSchdVtrRecApp::CSchdVtrRecApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+	vtr = NULL;
+	vtr_state = 0;
+	vtr_tc = 0xFFFFFFFF;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,6 @@ BOOL CSchdVtrRecApp::InitInstance()
 
 	/* parse command line */
 	ParseCommandLine(m_opts);
-
 
 	CSchdVtrRecDlg dlg;
 	m_pMainWnd = &dlg;

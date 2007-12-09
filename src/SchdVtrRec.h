@@ -16,6 +16,11 @@
 
 #include "SchdVtrRecConf.h"
 
+#define VTR_ONLINE					(1<<0)
+#define VTR_TAPE_LOADED				(1<<1)
+#define VTR_RECORD_NOT_INHIBITED	(1<<2)
+#define VTR_REMOTE_CONTROL			(1<<3)
+
 /////////////////////////////////////////////////////////////////////////////
 // CSchdVtrRecApp:
 // See SchdVtrRec.cpp for the implementation of this class
@@ -25,6 +30,10 @@ class CSchdVtrRecApp : public CWinApp
 {
 public:
 	CSchdVtrRecConf m_opts;
+
+	void* vtr;
+	int vtr_state;
+	int vtr_tc;
 
 	CSchdVtrRecApp();
 
