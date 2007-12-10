@@ -14,12 +14,19 @@
 class CSchdVtrRecDlg : public CDialog
 {
 	char title[1024];
+	HANDLE monitor_thread;
+	unsigned long monitor_id;
+
 // Construction
 public:
 	CSchdVtrRecDlg(CWnd* pParent = NULL);	// standard constructor
 
 	void UpdateStatus(void);
 	void UpdateTC(void);
+
+	void record_stop();
+	void record_start();
+	CListCtrl* schedule_list;
 
 // Dialog Data
 	//{{AFX_DATA(CSchdVtrRecDlg)
@@ -40,7 +47,6 @@ protected:
 	HICON m_icon_ok;
 	CMenu m_TrayMenu;
 	NOTIFYICONDATA tnd;
-	CListCtrl* schedule_list;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSchdVtrRecDlg)

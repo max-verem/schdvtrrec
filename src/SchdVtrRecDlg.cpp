@@ -19,6 +19,131 @@ extern CSchdVtrRecApp theApp;
 #include <vtr_srv.h>
 #include <mytimecode.h>
 
+#include <Mmsystem.h>
+#pragma comment(lib, "winmm.lib") 
+
+/*
+ *
+ * Return current timecode
+ *
+ */
+static unsigned long get_current_tc(void)
+{
+	char tc_text[128];
+	time_t ltime;
+	struct tm *rtime;
+	unsigned long tc;
+
+	/* request time */
+	time( &ltime );
+	rtime = localtime( &ltime );
+
+	/* request frames */
+	tc = timeGetTime();
+
+	/* compose */
+	sprintf
+	(
+		tc_text, 
+		"%.2d:%.2d:%.2d:%.2d",
+		rtime->tm_hour,
+		rtime->tm_min,
+		rtime->tm_sec,
+		(tc % 1000) / 40
+	);
+
+	/* parse */
+	tc = tc_txt2frames(tc_text);
+
+	return tc;
+};
+
+static unsigned long WINAPI schedule_monitor(void* p)
+{
+	int f_update_ui;
+	unsigned long curr;
+	CSchdVtrRecDlg* dlg = (CSchdVtrRecDlg*)p;
+
+	theApp.m_ini->RECORD = 0;
+
+	while(0 == theApp.m_ini->f_exit)
+	{
+		f_update_ui = 0;
+
+		if(0 != theApp.m_ini->COUNT)
+		{
+			/* request current time */
+			curr = get_current_tc();
+
+			/* check if remain */
+			if(curr < theApp.m_ini->START[0])
+			{
+				/* check if recording is going (something wrong) */
+				if(0 != theApp.m_ini->RECORD)
+					dlg->record_stop();
+				theApp.m_ini->RECORD = 0;
+
+				theApp.m_ini->REMAIN_TO_START = theApp.m_ini->START[0] - curr;
+				theApp.m_ini->REMAIN_TO_STOP = 0xFFFFFFFF;
+				f_update_ui = 1;
+
+			}
+			else
+			{
+				/* check if record already started */
+				if(0 != theApp.m_ini->RECORD)
+				{
+					/* should we stop */
+					if
+					(
+						(theApp.m_ini->RECORD + theApp.m_ini->DUR[0])
+						>
+						(timeGetTime() / 40)
+					)
+					{
+						/* we should stop recording */
+						dlg->record_stop();
+						theApp.m_ini->RECORD = 0;
+					}
+					else
+					{
+						/* calc remains */
+						theApp.m_ini->REMAIN_TO_START = 0xFFFFFFFF;
+						theApp.m_ini->REMAIN_TO_STOP = 
+							(theApp.m_ini->RECORD + theApp.m_ini->DUR[0])
+							-
+							(timeGetTime() / 40);
+					}
+					
+					f_update_ui = 1;
+				}
+				else
+				{
+					/* drop obsolte item */
+					if(theApp.m_ini->COUNT > 1)
+					{
+						unsigned long tc_t = theApp.m_ini->START[0];
+						unsigned long tc_d = theApp.m_ini->DUR[0];
+
+						memmove(&theApp.m_ini->START[0], &theApp.m_ini->START[1],
+							theApp.m_ini->COUNT*sizeof(unsigned long));
+						memmove(&theApp.m_ini->DUR[0], &theApp.m_ini->DUR[1],
+							theApp.m_ini->COUNT*sizeof(unsigned long));
+
+						theApp.m_ini->START[theApp.m_ini->COUNT - 1] = tc_t;
+						theApp.m_ini->DUR[theApp.m_ini->COUNT - 1] = tc_d;
+					};
+				};
+			};	
+		};
+
+		dlg->schedule_list->SetItemCountEx(theApp.m_ini->COUNT, LVSICF_NOSCROLL);
+	
+		Sleep(80);
+	};
+
+	return 0;
+};
 
 /*
  * VTR state callback function
@@ -167,6 +292,12 @@ void CSchdVtrRecDlg::OnSize(UINT nType, int cx, int cy)
 
 void CSchdVtrRecDlg::OnDestroy() 
 {
+	/* stop thread */
+	theApp.m_ini->f_exit = 1;
+	if(INVALID_HANDLE_VALUE != monitor_thread)
+		WaitForSingleObject(monitor_thread, INFINITE);
+
+	/* destroy VTR */
 	if(NULL != 	theApp.vtr)
 	{
 		/* stop service */
@@ -364,8 +495,7 @@ BOOL CSchdVtrRecDlg::OnInitDialog()
 	schedule_list->InsertColumn(1,_T("DATE"), LVCFMT_LEFT , 200, -1);
 	schedule_list->InsertColumn(2,_T("DURATION"), LVCFMT_LEFT, 120, -1);
 	schedule_list->InsertColumn(3,_T("REMAIN TO FINISH"), LVCFMT_LEFT, 120,-1);
-	schedule_list->SetItemCountEx(10, LVSICF_NOSCROLL);
-
+	schedule_list->SetItemCountEx(theApp.m_ini->COUNT, LVSICF_NOSCROLL);
 
 	/* init tray way */
 	InitTray();
@@ -428,6 +558,18 @@ BOOL CSchdVtrRecDlg::OnInitDialog()
 
 	/* run callback */
 	cb_vtr(theApp.vtr, 0, 0, this);
+
+	/* run monitor thread */
+	theApp.m_ini->f_exit = 0;
+	monitor_thread = CreateThread
+	(
+		NULL,
+		4096,
+		schedule_monitor,
+		this,
+		0,
+		&monitor_id
+	);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -557,34 +699,76 @@ BOOL CSchdVtrRecDlg::OnMenuCommand(int id)
 void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
-	LV_ITEM* pItem= &(pDispInfo)->item;
-	int iItemIndx= pItem->iItem;
+	LV_ITEM* pItem = &(pDispInfo)->item;
+	int iItemIndx = pItem->iItem;
+	char* s = NULL;
+	char t[128];
+	t[0] = 0;
 
 	if (pItem->mask & LVIF_TEXT) //valid text buffer?
 	{
-			// fill subitems
-			switch(pItem->iSubItem)
-			{
-				/* REMAIN TO START */
-				case 0:
-					lstrcpy(pItem->pszText, "23:32:23:00");
-					break;
+		// fill subitems
+		switch(pItem->iSubItem)
+		{
+			/* REMAIN TO START */
+			case 0:
+				if
+				(
+					(0 == iItemIndx)
+					&&
+					(0xFFFFFFFF != theApp.m_ini->REMAIN_TO_START)
+				)
+					s = tc_frames2txt(theApp.m_ini->REMAIN_TO_START, t);
+				else
+					s = "";
+				break;
 
-				/* DATE */
-				case 1:
-					lstrcpy(pItem->pszText, "2007-12-08 23:32:23:00");
-					break;
+			/* DATE TIME*/
+			case 1:
+				s = tc_frames2txt(theApp.m_ini->START[iItemIndx], t);
+				break;
 
-				/* DURATION */
-				case 2:
-					lstrcpy(pItem->pszText, "00:18:21:00");
-					break;
+			/* DURATION */
+			case 2:
+				s = tc_frames2txt(theApp.m_ini->DUR[iItemIndx], t);
+				break;
 
-				/* REMAIN TO FINISH */
-				case 3:
-					lstrcpy(pItem->pszText, "23:32:23:00");
-					break;
-			};
+			/* REMAIN TO FINISH */
+			case 3:
+				if
+				(
+					(0 == iItemIndx)
+					&&
+					(0xFFFFFFFF != theApp.m_ini->REMAIN_TO_STOP)
+				)
+					s = tc_frames2txt(theApp.m_ini->REMAIN_TO_STOP, t);
+				else
+					s = "";
+				break;
+		};
+
+		if(NULL != s)
+			lstrcpy(pItem->pszText, s);
 	};
 
+};
+
+/*
+ *
+ * Stop recording
+ *
+ */
+void CSchdVtrRecDlg::record_stop()
+{
+	printf("STOP\n");
+};
+
+/*
+ *
+ * Start recording
+ *
+ */
+void CSchdVtrRecDlg::record_start()
+{
+	printf("START\n");
 };

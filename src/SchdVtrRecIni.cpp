@@ -7,6 +7,8 @@
 #include "SchdVtrRecIni.h"
 #include "SchdVtrRecConf.h"
 
+#include <Mmsystem.h>
+
 #include <mytimecode.h>
 
 #ifdef _DEBUG
@@ -29,7 +31,9 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 		*l = (char*)malloc(MAX_STRING_LEN),
 		*t = (char*)malloc(MAX_STRING_LEN),
 		*d = (char*)malloc(MAX_STRING_LEN);
-		
+	
+	unsigned __int64 this_day = get_curr_day_tc();
+
 	/* setup defaults */
 	COUNT = 0;
 
@@ -75,7 +79,7 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 					tc_d = tc_txt2frames(d);
 
 					/* store value */
-					add_timecodes(tc_t, tc_d);
+					add_timecodes(tc_t, tc_d, this_day + tc_t);
 				};
 			};
 		};
@@ -83,33 +87,108 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 		fclose(f);
 	};
 
-	/* try to sort items */
-	for(i = 0;i<COUNT; i++)
-	{
-		/* find minimal */
-		for(j = i + 1, k = i; j < COUNT; j++)
-			if(START[k] > START[j])
-				k = j;
-		
-		/* swap values */
-		if(i != k)
-		{
-			tc_t = START[i]; START[i] = START[k]; START[k] = tc_t;
-			tc_d = DUR[i]; DUR[i] = DUR[k]; DUR[k] = tc_d;
-		};
-	};
+	/* sort timemingd */
+	sort_starts();
 
 	free(l);
 	free(t);
 	free(d);
 }
 
+#define SWAP_U(A, B, T)										\
+{															\
+	unsigned T t;											\
+	t = A; A = B; B = t;									\
+}
+
+void CSchdVtrRecIni::sort_starts(void)
+{
+	int i, j, k;
+
+	/* try to sort items */
+	for(i = 0;i<COUNT; i++)
+	{
+		/* find minimal */
+		for(j = i + 1, k = i; j < COUNT; j++)
+			if(DATETIME[k] > DATETIME[j])
+				k = j;
+		
+		/* swap values */
+		if(i != k)
+		{
+			SWAP_U(START[i], START[k], long);
+			SWAP_U(DUR[i], DUR[k], long);
+			SWAP_U(DATETIME[i], DATETIME[k], __int64);
+		};
+	};
+};
+
+unsigned __int64 CSchdVtrRecIni::get_now_day_tc(void)
+{
+	time_t ltime;
+	struct tm *rtime;
+	unsigned __int64 t;
+
+	/* request time */
+	time( &ltime );
+	rtime = localtime( &ltime );
+	rtime->tm_hour = 0;
+	rtime->tm_min = 0;
+	rtime->tm_sec = 0;
+	ltime = mktime(rtime);
+
+	t = timeGetTime();
+	t %= 1000;
+	t /= 40;
+
+	return 
+		t
+		+
+		((unsigned __int64)ltime)*25;
+		
+};
+
+unsigned __int64 CSchdVtrRecIni::get_next_day_tc(void)
+{
+	time_t ltime;
+	struct tm *rtime;
+
+	/* request time */
+	time( &ltime );
+	rtime = localtime( &ltime );
+	rtime->tm_hour = 0;
+	rtime->tm_min = 0;
+	rtime->tm_sec = 0;
+	rtime->tm_mday += 1;
+	ltime = mktime(rtime);
+	
+	return 
+		((unsigned __int64)ltime)*25;
+};
+
+unsigned __int64 CSchdVtrRecIni::get_curr_day_tc(void)
+{
+	time_t ltime;
+	struct tm *rtime;
+
+	/* request time */
+	time( &ltime );
+	rtime = localtime( &ltime );
+	rtime->tm_hour = 0;
+	rtime->tm_min = 0;
+	rtime->tm_sec = 0;
+	ltime = mktime(rtime);
+	
+	return 
+		((unsigned __int64)ltime)*25;
+};
+
 CSchdVtrRecIni::~CSchdVtrRecIni()
 {
 
 }
 
-void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_frm)
+void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm)
 {
 	/* skip empty periods */
 	if(0 == dur_frm) return;
@@ -117,5 +196,7 @@ void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_fr
 	/* save values */
 	START[COUNT] = start_frm;
 	DUR[COUNT] = dur_frm;
+	DATETIME[COUNT] = dur_abs_frm;
+
 	COUNT++;
 }
