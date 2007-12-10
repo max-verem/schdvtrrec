@@ -23,7 +23,7 @@ static char THIS_FILE[]=__FILE__;
 
 CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 {
-	int i, r;
+	int i, r, j, k;
 	unsigned long tc_t, tc_d;
 	char
 		*l = (char*)malloc(MAX_STRING_LEN),
@@ -81,6 +81,22 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 		};
 
 		fclose(f);
+	};
+
+	/* try to sort items */
+	for(i = 0;i<COUNT; i++)
+	{
+		/* find minimal */
+		for(j = i + 1, k = i; j < COUNT; j++)
+			if(START[k] > START[j])
+				k = j;
+		
+		/* swap values */
+		if(i != k)
+		{
+			tc_t = START[i]; START[i] = START[k]; START[k] = tc_t;
+			tc_d = DUR[i]; DUR[i] = DUR[k]; DUR[k] = tc_d;
+		};
 	};
 
 	free(l);
