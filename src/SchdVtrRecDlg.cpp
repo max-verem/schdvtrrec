@@ -134,7 +134,7 @@ static void cb_vtr(void *desc, int state_id, int state_val, void *cookie)
 		if(0 == v)
 			vtr_state |= VTR_TAPE_LOADED;
 
-		/* vtr in "remote" */
+		/* vtr in "record not inhibited" */
 		vtr_srv_get
 		(
 			desc, 
@@ -155,6 +155,62 @@ static void cb_vtr(void *desc, int state_id, int state_val, void *cookie)
 		);
 		if(0 == v)
 			vtr_state |= VTR_REMOTE_CONTROL;
+
+
+		/* vtr in "end of tape" */
+		vtr_srv_get
+		(
+			desc,
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_EOT, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_EOT;
+
+		/* vtr in "near end of tape" */
+		vtr_srv_get
+		(
+			desc,
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_NEAR_EOT, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_NEAR_EOT;
+
+		/* vtr in "ejecting" */
+		vtr_srv_get
+		(
+			desc,
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_EJECT, 
+			&v
+		);
+		if(0 == v)
+			vtr_state |= VTR_EJECTING;
+
+		/* vtr SVO and SYS alarm */
+		vtr_srv_get
+		(
+			desc,
+			VTR_SRV_STATE_STATUS_BIT, 
+			VTR_CMD_STATUS_BITS_SVO_ALARM, 
+			&v
+		);
+		if(0 == v)
+		{
+			vtr_srv_get
+			(
+				desc,
+				VTR_SRV_STATE_STATUS_BIT, 
+				VTR_CMD_STATUS_BITS_SYS_ALARM, 
+				&v
+			);
+			if(0 == v)
+				vtr_state |= VTR_SYS_SVO_ALARM;
+		};
+
 
 		/* update timecode */
 		vtr_srv_get(desc, VTR_SRV_STATE_TC, &vtr_tc);
@@ -191,6 +247,18 @@ void CSchdVtrRecDlg::UpdateStatus(void)
 
 	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_REMOTE_CONTROL);
 	s->SetIcon((theApp.vtr_state & VTR_REMOTE_CONTROL)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_EOT);
+	s->SetIcon((theApp.vtr_state & VTR_EOT)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_NEAR_EOT);
+	s->SetIcon((theApp.vtr_state & VTR_NEAR_EOT)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_EJECTING);
+	s->SetIcon((theApp.vtr_state & VTR_EJECTING)?m_icon_ok:m_icon_fail);
+
+	s = (CStatic*)GetDlgItem(IDC_ICON_VTR_SYS_SVO_ALARM);
+	s->SetIcon((theApp.vtr_state & VTR_SYS_SVO_ALARM)?m_icon_ok:m_icon_fail);
 };
 
 void CSchdVtrRecDlg::UpdateTC(void)
@@ -514,6 +582,22 @@ BOOL CSchdVtrRecDlg::OnInitDialog()
 		VTR_SRV_STATE_STATUS_BIT, 
 		VTR_CMD_STATUS_BITS_EJECT,
 		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_SVO_ALARM,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_SYS_ALARM,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_NEAR_EOT,
+		cb_vtr, this);
+	vtr_srv_reg_state_cb(theApp.vtr, 
+		VTR_SRV_STATE_STATUS_BIT, 
+		VTR_CMD_STATUS_BITS_EOT,
+		cb_vtr, this);
 
 	/* run service */
 	vtr_srv_start(theApp.vtr);
@@ -799,7 +883,9 @@ void CSchdVtrRecDlg::show_window_on_failed_status()
 	(
 		theApp.vtr_state
 		!=
-		(VTR_ONLINE | VTR_TAPE_LOADED | VTR_RECORD_NOT_INHIBITED | VTR_REMOTE_CONTROL)
+		(VTR_ONLINE | VTR_TAPE_LOADED 
+			| VTR_RECORD_NOT_INHIBITED | VTR_REMOTE_CONTROL
+			| VTR_EOT | VTR_NEAR_EOT | VTR_EJECTING | VTR_SYS_SVO_ALARM)
 	)
 		ShowWindow(SW_SHOW);
 }
