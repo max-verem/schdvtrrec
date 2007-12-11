@@ -25,7 +25,7 @@ static char THIS_FILE[]=__FILE__;
 
 CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 {
-	int i, r, j, k;
+	int i, r;
 	unsigned long tc_t, tc_d;
 	char
 		*l = (char*)malloc(MAX_STRING_LEN),
@@ -123,7 +123,7 @@ void CSchdVtrRecIni::sort_starts(void)
 	};
 };
 
-unsigned __int64 CSchdVtrRecIni::get_now_day_tc(void)
+unsigned __int64 CSchdVtrRecIni::get_now_tc(void)
 {
 	time_t ltime;
 	struct tm *rtime;
@@ -132,9 +132,6 @@ unsigned __int64 CSchdVtrRecIni::get_now_day_tc(void)
 	/* request time */
 	time( &ltime );
 	rtime = localtime( &ltime );
-	rtime->tm_hour = 0;
-	rtime->tm_min = 0;
-	rtime->tm_sec = 0;
 	ltime = mktime(rtime);
 
 	t = timeGetTime();

@@ -35,7 +35,7 @@ public:
 
 	static unsigned __int64 get_curr_day_tc(void);
 	static unsigned __int64 get_next_day_tc(void);
-	static unsigned __int64 get_now_day_tc(void);
+	static unsigned __int64 get_now_tc(void);
 private:
 	void add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm);
 };
