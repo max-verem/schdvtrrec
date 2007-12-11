@@ -16,8 +16,8 @@ ResourceCount=6
 Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
 Resource3=IDD_SCHDVTRREC_DIALOG
-Resource4=IDD_ABOUTBOX (English (U.S.))
-Resource5=IDR_MENU
+Resource4=IDR_MENU
+Resource5=IDD_ABOUTBOX (English (U.S.))
 Resource6=IDD_SCHDVTRREC_DIALOG (English (U.S.))
 
 [CLS:CSchdVtrRecApp]
