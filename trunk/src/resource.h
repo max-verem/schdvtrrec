@@ -32,6 +32,15 @@
 #define IDC_ICON_VTR_RECORD_NOT_INHIBITED 1013
 #define IDC_ICON_VTR_REMOTE_CONTROL     1014
 #define IDC_TC                          1015
+#define IDC_STATUS_VTR1                 1016
+#define IDC_ICON_VTR_EOT                1017
+#define IDC_STATUS_VTR5                 1018
+#define IDC_ICON_VTR_NEAR_EOT           1019
+#define IDC_STATUS_VTR6                 1020
+#define IDC_ICON_VTR_EJECTING           1021
+#define IDC_STATUS_VTR7                 1022
+#define IDC_ICON_VTR_SYS_ALARM          1023
+#define IDC_ICON_VTR_SYS_SVO_ALARM      1023
 #define ID_PROGRAM_SHOW                 32771
 #define ID_PROGRAM_HIDE                 32772
 #define ID_PROGRAM_EXIT                 32773

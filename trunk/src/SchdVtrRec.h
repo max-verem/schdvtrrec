@@ -21,6 +21,10 @@
 #define VTR_TAPE_LOADED				(1<<1)
 #define VTR_RECORD_NOT_INHIBITED	(1<<2)
 #define VTR_REMOTE_CONTROL			(1<<3)
+#define VTR_EOT						(1<<4)
+#define VTR_NEAR_EOT				(1<<5)
+#define VTR_EJECTING				(1<<6)
+#define VTR_SYS_SVO_ALARM			(1<<7)
 
 /////////////////////////////////////////////////////////////////////////////
 // CSchdVtrRecApp:
