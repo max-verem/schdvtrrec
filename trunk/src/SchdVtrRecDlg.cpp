@@ -22,124 +22,86 @@ extern CSchdVtrRecApp theApp;
 #include <Mmsystem.h>
 #pragma comment(lib, "winmm.lib") 
 
-/*
- *
- * Return current timecode
- *
- */
-static unsigned long get_current_tc(void)
-{
-	char tc_text[128];
-	time_t ltime;
-	struct tm *rtime;
-	unsigned long tc;
-
-	/* request time */
-	time( &ltime );
-	rtime = localtime( &ltime );
-
-	/* request frames */
-	tc = timeGetTime();
-
-	/* compose */
-	sprintf
-	(
-		tc_text, 
-		"%.2d:%.2d:%.2d:%.2d",
-		rtime->tm_hour,
-		rtime->tm_min,
-		rtime->tm_sec,
-		(tc % 1000) / 40
-	);
-
-	/* parse */
-	tc = tc_txt2frames(tc_text);
-
-	return tc;
-};
-
 static unsigned long WINAPI schedule_monitor(void* p)
 {
-	int f_update_ui;
-	unsigned long curr;
+	unsigned __int64 t;
 	CSchdVtrRecDlg* dlg = (CSchdVtrRecDlg*)p;
 
 	theApp.m_ini->RECORD = 0;
 
-	while(0 == theApp.m_ini->f_exit)
+	while((0 == theApp.m_ini->f_exit)&&(0 != theApp.m_ini->COUNT))
 	{
-		f_update_ui = 0;
+		t = CSchdVtrRecIni::get_now_tc();
 
-		if(0 != theApp.m_ini->COUNT)
+		/* check if item is obsolete */
+		if(t > (theApp.m_ini->DATETIME[0] + theApp.m_ini->DUR[0]))
 		{
-			/* request current time */
-			curr = get_current_tc();
-
-			/* check if remain */
-			if(curr < theApp.m_ini->START[0])
+			/* 
+			 * first item is obsolete and must be moved to the end of list 
+			 * but check if record started before
+			 */
+			if(0 != theApp.m_ini->RECORD)
 			{
-				/* check if recording is going (something wrong) */
-				if(0 != theApp.m_ini->RECORD)
-					dlg->record_stop();
+				dlg->record_stop();
 				theApp.m_ini->RECORD = 0;
+			};
 
-				theApp.m_ini->REMAIN_TO_START = theApp.m_ini->START[0] - curr;
-				theApp.m_ini->REMAIN_TO_STOP = 0xFFFFFFFF;
-				f_update_ui = 1;
+			theApp.m_ini->DATETIME[0] = 
+				CSchdVtrRecIni::get_next_day_tc()
+				+
+				theApp.m_ini->START[0];
 
+			theApp.m_ini->sort_starts();
+		}
+		else
+		{
+			if(t < theApp.m_ini->DATETIME[0])
+			{
+				/* check if still recording */
+				if(0 != theApp.m_ini->RECORD)
+				{
+					dlg->record_stop();
+					theApp.m_ini->RECORD = 0;
+				};
+
+				/* update remains */
+				theApp.m_ini->REMAIN_TO_START = 
+					theApp.m_ini->DATETIME[0]
+					-
+					t;
+				theApp.m_ini->REMAIN_TO_STOP = 0;
+
+				/* check if status OK and window is visible */
+				if(theApp.m_ini->REMAIN_TO_START < theApp.m_opts.m_alert_before)
+					dlg->show_window_on_failed_status();
 			}
 			else
 			{
-				/* check if record already started */
-				if(0 != theApp.m_ini->RECORD)
+				/* check record sent */
+				if(0 == theApp.m_ini->RECORD)
 				{
-					/* should we stop */
-					if
-					(
-						(theApp.m_ini->RECORD + theApp.m_ini->DUR[0])
-						>
-						(timeGetTime() / 40)
-					)
-					{
-						/* we should stop recording */
-						dlg->record_stop();
-						theApp.m_ini->RECORD = 0;
-					}
-					else
-					{
-						/* calc remains */
-						theApp.m_ini->REMAIN_TO_START = 0xFFFFFFFF;
-						theApp.m_ini->REMAIN_TO_STOP = 
-							(theApp.m_ini->RECORD + theApp.m_ini->DUR[0])
-							-
-							(timeGetTime() / 40);
-					}
-					
-					f_update_ui = 1;
-				}
-				else
-				{
-					/* drop obsolte item */
-					if(theApp.m_ini->COUNT > 1)
-					{
-						unsigned long tc_t = theApp.m_ini->START[0];
-						unsigned long tc_d = theApp.m_ini->DUR[0];
-
-						memmove(&theApp.m_ini->START[0], &theApp.m_ini->START[1],
-							theApp.m_ini->COUNT*sizeof(unsigned long));
-						memmove(&theApp.m_ini->DUR[0], &theApp.m_ini->DUR[1],
-							theApp.m_ini->COUNT*sizeof(unsigned long));
-
-						theApp.m_ini->START[theApp.m_ini->COUNT - 1] = tc_t;
-						theApp.m_ini->DUR[theApp.m_ini->COUNT - 1] = tc_d;
-					};
+					theApp.m_ini->RECORD = t;
+					dlg->record_start();
 				};
-			};	
+
+
+				/* update remains */
+				theApp.m_ini->REMAIN_TO_START = 0;
+				theApp.m_ini->REMAIN_TO_STOP = 
+					theApp.m_ini->DATETIME[0] 
+					+ 
+					theApp.m_ini->DUR[0]
+					-
+					t;
+
+				/* check if status OK and window is visible */
+				dlg->show_window_on_failed_status();
+			};
 		};
 
 		dlg->schedule_list->SetItemCountEx(theApp.m_ini->COUNT, LVSICF_NOSCROLL);
 	
-		Sleep(80);
+		Sleep(40 * 5);
 	};
 
 	return 0;
@@ -149,7 +111,7 @@ static unsigned long WINAPI schedule_monitor(void* p)
  * VTR state callback function
  *
  */
-void cb_vtr(void *desc, int state_id, int state_val, void *cookie)
+static void cb_vtr(void *desc, int state_id, int state_val, void *cookie)
 {
 	int i = 0, v;
 	int vtr_state = 0; 
@@ -301,7 +263,7 @@ void CSchdVtrRecDlg::OnDestroy()
 	if(NULL != 	theApp.vtr)
 	{
 		/* stop service */
-		vtr_srv_start(theApp.vtr);
+		vtr_srv_stop(theApp.vtr);
 
 		/* destroy service */
 		vtr_srv_destroy(theApp.vtr);
@@ -619,7 +581,7 @@ HCURSOR CSchdVtrRecDlg::OnQueryDragIcon()
 BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
 {
 	BOOL ret = FALSE;
-	int cmd, r;
+	int cmd, r = 0;
 
 	switch(id)
 	{
@@ -634,7 +596,8 @@ BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
 			break;
 
 		case IDC_BUTTON_STOP:
-			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_STOP);
+			record_stop();
+//			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_STOP);
 			ret = TRUE;
 			break;
 
@@ -649,7 +612,8 @@ BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
 			break;
 
 		case IDC_BUTTON_RECORD:
-			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_RECORD);
+			record_start();
+//			r = vtr_srv_send_cmd_sync(theApp.vtr, NULL, cmd = VTR_CMD_RECORD);
 			ret = TRUE;
 			break;
 	};
@@ -696,14 +660,29 @@ BOOL CSchdVtrRecDlg::OnMenuCommand(int id)
 
 -------------------------------------------------------------------------- */
 
+static char* build_long_tc(char* buffer, unsigned __int64 tc)
+{
+	static char *templ = "%Y-%m-%d %H:%M:%S";
+	struct tm *rtime;
+	time_t ltime = (time_t)(tc / 25);
+	tc %= 25;
+
+	rtime = localtime( &ltime );
+
+	strftime( buffer, 128, templ , rtime );
+
+	sprintf(buffer + strlen(buffer), ":%.2d", (unsigned long)tc);
+
+	return buffer;
+};
+
 void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult) 
 {
 	LV_DISPINFO* pDispInfo = (LV_DISPINFO*)pNMHDR;
 	LV_ITEM* pItem = &(pDispInfo)->item;
 	int iItemIndx = pItem->iItem;
 	char* s = NULL;
-	char t[128];
-	t[0] = 0;
+	char buffer[128]; buffer[0] = 0;
 
 	if (pItem->mask & LVIF_TEXT) //valid text buffer?
 	{
@@ -716,21 +695,21 @@ void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 				(
 					(0 == iItemIndx)
 					&&
-					(0xFFFFFFFF != theApp.m_ini->REMAIN_TO_START)
+					(0 != theApp.m_ini->REMAIN_TO_START)
 				)
-					s = tc_frames2txt(theApp.m_ini->REMAIN_TO_START, t);
+					s = tc_frames2txt((unsigned long)theApp.m_ini->REMAIN_TO_START, buffer);
 				else
 					s = "";
 				break;
 
 			/* DATE TIME*/
 			case 1:
-				s = tc_frames2txt(theApp.m_ini->START[iItemIndx], t);
+				s = build_long_tc(buffer, theApp.m_ini->DATETIME[iItemIndx]);
 				break;
 
 			/* DURATION */
 			case 2:
-				s = tc_frames2txt(theApp.m_ini->DUR[iItemIndx], t);
+				s = tc_frames2txt((unsigned long)theApp.m_ini->DUR[iItemIndx], buffer);
 				break;
 
 			/* REMAIN TO FINISH */
@@ -739,9 +718,9 @@ void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 				(
 					(0 == iItemIndx)
 					&&
-					(0xFFFFFFFF != theApp.m_ini->REMAIN_TO_STOP)
+					(0 != theApp.m_ini->REMAIN_TO_STOP)
 				)
-					s = tc_frames2txt(theApp.m_ini->REMAIN_TO_STOP, t);
+					s = tc_frames2txt((unsigned long)theApp.m_ini->REMAIN_TO_STOP, buffer);
 				else
 					s = "";
 				break;
@@ -760,7 +739,7 @@ void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
  */
 void CSchdVtrRecDlg::record_stop()
 {
-	printf("STOP\n");
+	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_STOP);
 };
 
 /*
@@ -770,5 +749,57 @@ void CSchdVtrRecDlg::record_stop()
  */
 void CSchdVtrRecDlg::record_start()
 {
-	printf("START\n");
+#define DEC2BCD(V) ((unsigned long)( ((V / 10)<<4) | (V % 10)  ))
+	unsigned long d;
+	time_t ltime;
+	struct tm *rtime;
+
+	/* request time */
+	time( &ltime );
+
+	/* local */
+	rtime = localtime( &ltime );
+
+	/* setup users bit */
+	d = 
+		(DEC2BCD( (rtime->tm_year + 1900) / 100 ) << 24)
+		|
+		(DEC2BCD( (rtime->tm_year + 1900) % 100 ) << 16)
+		|
+		(DEC2BCD(rtime->tm_mon ) << 8)
+		|
+		(DEC2BCD(rtime->tm_mday ) << 0);
+
+	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_USER_BIT_PRESET, d);
+
+	/* setup timecode */
+	d = 
+		(DEC2BCD( rtime->tm_hour ) << 24)
+		|
+		(DEC2BCD( rtime->tm_min ) << 16)
+		|
+		(DEC2BCD( rtime->tm_sec ) << 8)
+		|
+		(DEC2BCD( (timeGetTime() % 1000) / 30) << 0);
+
+	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_TIME_CODE_PRESET, d);
+
+
+	/* record */
+	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_RECORD);
 };
+
+/*
+ * Check if status failed and window in hidden state 
+ * If this condition is true - show window in normal state
+ */
+void CSchdVtrRecDlg::show_window_on_failed_status()
+{
+	if
+	(
+		theApp.vtr_state
+		!=
+		(VTR_ONLINE | VTR_TAPE_LOADED | VTR_RECORD_NOT_INHIBITED | VTR_REMOTE_CONTROL)
+	)
+		ShowWindow(SW_SHOW);
+}

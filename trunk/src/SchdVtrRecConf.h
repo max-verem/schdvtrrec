@@ -11,6 +11,7 @@
 
 #define DEFAULT_SERIAL_PORT "COM1:"
 #define DEFAULT_SCHEDULE_FILE "SchdVtrRec.ini"
+#define DEFAULT_ALERT_TIME (25*60*1)
 
 class CSchdVtrRecConf : public CCommandLineInfo  
 {
@@ -18,6 +19,7 @@ class CSchdVtrRecConf : public CCommandLineInfo
 public:
 	char m_serial_port_name[1024];
 	char m_schedule_file_name[1024];
+	unsigned long m_alert_before;
 
 	CSchdVtrRecConf();
 

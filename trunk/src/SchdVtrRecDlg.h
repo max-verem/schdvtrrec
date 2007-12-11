@@ -19,6 +19,7 @@ class CSchdVtrRecDlg : public CDialog
 
 // Construction
 public:
+	void show_window_on_failed_status();
 	CSchdVtrRecDlg(CWnd* pParent = NULL);	// standard constructor
 
 	void UpdateStatus(void);
