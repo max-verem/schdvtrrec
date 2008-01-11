@@ -850,7 +850,7 @@ void CSchdVtrRecDlg::record_start()
 		|
 		(DEC2BCD( (rtime->tm_year + 1900) % 100 ) << 16)
 		|
-		(DEC2BCD(rtime->tm_mon ) << 8)
+		(DEC2BCD( (rtime->tm_mon + 1) ) << 8)
 		|
 		(DEC2BCD(rtime->tm_mday ) << 0);
 
