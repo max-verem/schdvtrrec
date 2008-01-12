@@ -26,7 +26,8 @@ public:
 
 	unsigned long 
 		START[MAX_SCHD_RECORDS],
-		DUR[MAX_SCHD_RECORDS];
+		DUR[MAX_SCHD_RECORDS],
+		EJECT[MAX_SCHD_RECORDS];
 
 	void sort_starts(void);
 
@@ -37,7 +38,7 @@ public:
 	static unsigned __int64 get_next_day_tc(void);
 	static unsigned __int64 get_now_tc(void);
 private:
-	void add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm);
+	void add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm, unsigned long eject);
 };
 
 #endif // !defined(AFX_SCHDVTRRECINI_H__7E037EB8_5AB7_400A_B482_A43F47ACE138__INCLUDED_)
