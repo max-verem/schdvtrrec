@@ -43,6 +43,8 @@ static unsigned long WINAPI schedule_monitor(void* p)
 			if(0 != theApp.m_ini->RECORD)
 			{
 				dlg->record_stop();
+				if(theApp.m_ini->EJECT[0])
+					dlg->record_eject();
 				theApp.m_ini->RECORD = 0;
 			};
 
@@ -61,6 +63,8 @@ static unsigned long WINAPI schedule_monitor(void* p)
 				if(0 != theApp.m_ini->RECORD)
 				{
 					dlg->record_stop();
+					if(theApp.m_ini->EJECT[0])
+						dlg->record_eject();
 					theApp.m_ini->RECORD = 0;
 				};
 
@@ -525,6 +529,7 @@ BOOL CSchdVtrRecDlg::OnInitDialog()
 	schedule_list->InsertColumn(1,_T("DATE"), LVCFMT_LEFT , 200, -1);
 	schedule_list->InsertColumn(2,_T("DURATION"), LVCFMT_LEFT, 120, -1);
 	schedule_list->InsertColumn(3,_T("REMAIN TO FINISH"), LVCFMT_LEFT, 120,-1);
+	schedule_list->InsertColumn(4,_T("EJECT"), LVCFMT_LEFT, 60,-1);
 	schedule_list->SetItemCountEx(theApp.m_ini->COUNT, LVSICF_NOSCROLL);
 
 	/* init tray way */
@@ -808,12 +813,28 @@ void CSchdVtrRecDlg::OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 				else
 					s = "";
 				break;
+
+			/* DATE TIME*/
+			case 4:
+				if(theApp.m_ini->EJECT[iItemIndx])
+					s = "EJECT";
+				else
+					s = "";
+				break;
 		};
 
 		if(NULL != s)
 			lstrcpy(pItem->pszText, s);
 	};
 
+};
+
+/**
+ * Eject tape
+ */
+void CSchdVtrRecDlg::record_eject()
+{
+	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_EJECT);
 };
 
 /*
