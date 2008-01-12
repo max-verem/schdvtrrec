@@ -26,11 +26,12 @@ static char THIS_FILE[]=__FILE__;
 CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 {
 	int i, r;
-	unsigned long tc_t, tc_d;
+	unsigned long tc_t, tc_d, f_eject;
 	char
 		*l = (char*)malloc(MAX_STRING_LEN),
 		*t = (char*)malloc(MAX_STRING_LEN),
-		*d = (char*)malloc(MAX_STRING_LEN);
+		*d = (char*)malloc(MAX_STRING_LEN),
+		*e = (char*)malloc(MAX_STRING_LEN);
 	
 	unsigned __int64 this_day = get_curr_day_tc();
 
@@ -72,14 +73,26 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 			if('#' != l[0])
 			{
 				/* scan for two values */
-				if(2 == (r = sscanf(l, "%s %s", t, d)))
+				if(3 == (r = sscanf(l, "%s %s %s", t, d, e)))
 				{
 					/* parse timecodes */
 					tc_t = tc_txt2frames(l);
 					tc_d = tc_txt2frames(d);
+					
+					/* parse eject flag */
+					f_eject = 0;
+					if
+					(
+						('E' == e[0]) || 
+						('e' == e[0]) ||
+						('^' == e[0]) ||
+						('+' == e[0])
+					)
+						f_eject = 1;
+
 
 					/* store value */
-					add_timecodes(tc_t, tc_d, this_day + tc_t);
+					add_timecodes(tc_t, tc_d, this_day + tc_t, f_eject);
 				};
 			};
 		};
@@ -93,6 +106,7 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 	free(l);
 	free(t);
 	free(d);
+	free(e);
 }
 
 #define SWAP_U(A, B, T)										\
@@ -119,6 +133,7 @@ void CSchdVtrRecIni::sort_starts(void)
 			SWAP_U(START[i], START[k], long);
 			SWAP_U(DUR[i], DUR[k], long);
 			SWAP_U(DATETIME[i], DATETIME[k], __int64);
+			SWAP_U(EJECT[i], EJECT[k], long);
 		};
 	};
 };
@@ -185,7 +200,7 @@ CSchdVtrRecIni::~CSchdVtrRecIni()
 
 }
 
-void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm)
+void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_frm, unsigned __int64 dur_abs_frm, unsigned long eject)
 {
 	/* skip empty periods */
 	if(0 == dur_frm) return;
@@ -194,6 +209,7 @@ void CSchdVtrRecIni::add_timecodes(unsigned long start_frm, unsigned long dur_fr
 	START[COUNT] = start_frm;
 	DUR[COUNT] = dur_frm;
 	DATETIME[COUNT] = dur_abs_frm;
+	EJECT[COUNT] = eject;
 
 	COUNT++;
 }
