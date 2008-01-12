@@ -27,6 +27,7 @@ public:
 
 	void record_stop();
 	void record_start();
+	void record_eject();
 	CListCtrl* schedule_list;
 
 // Dialog Data
