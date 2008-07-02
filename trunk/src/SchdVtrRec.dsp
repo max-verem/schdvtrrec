@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../install/Release/SchdVtrRec.exe" /libpath:"C:\projects\airforce\temp\Release\vtr_cmd" /libpath:"C:\projects\airforce\temp\Release\vtr_srv" /libpath:"C:\projects\airforce\temp\Release\mytimecode"
+# ADD LINK32 /nologo /subsystem:windows /machine:I386 /out:"../install/SchdVtrRec.exe" /libpath:"C:\projects\airforce\temp\Release\vtr_cmd" /libpath:"C:\projects\airforce\temp\Release\vtr_srv" /libpath:"C:\projects\airforce\temp\Release\mytimecode"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "SchdVtrRec - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../install/Debug/SchdVtrRec.exe" /pdbtype:sept /libpath:"C:\projects\airforce\temp\Debug\vtr_cmd" /libpath:"C:\projects\airforce\temp\Debug\vtr_srv" /libpath:"C:\projects\airforce\temp\Debug\mytimecode"
+# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386 /out:"../install/SchdVtrRec_d.exe" /pdbtype:sept /libpath:"C:\projects\airforce\temp\Debug\vtr_cmd" /libpath:"C:\projects\airforce\temp\Debug\vtr_srv" /libpath:"C:\projects\airforce\temp\Debug\mytimecode"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -151,6 +151,46 @@ SOURCE=.\StdAfx.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=.\res\digits\0.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\1.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\2.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\3.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\4.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\5.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\6.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\7.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\8.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\9.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\icon1.ico
 # End Source File
 # Begin Source File
@@ -159,11 +199,19 @@ SOURCE=.\res\icon2.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\digits\SC.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\SchdVtrRec.ico
 # End Source File
 # Begin Source File
 
 SOURCE=.\res\SchdVtrRec.rc2
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\digits\SP.bmp
 # End Source File
 # End Group
 # Begin Source File
