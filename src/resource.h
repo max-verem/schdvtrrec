@@ -10,6 +10,19 @@
 #define IDR_MENU                        129
 #define IDI_ICON_VTR_STATUS_FAIL        130
 #define IDI_ICON_VTR_STATUS_OK          131
+#define IDB_BITMAP1                     132
+#define IDB_DIGIT_0                     133
+#define IDB_DIGIT_1                     134
+#define IDB_DIGIT_2                     135
+#define IDB_DIGIT_3                     136
+#define IDB_DIGIT_4                     137
+#define IDB_DIGIT_5                     138
+#define IDB_DIGIT_6                     139
+#define IDB_DIGIT_7                     140
+#define IDB_DIGIT_8                     141
+#define IDB_DIGIT_9                     142
+#define IDB_DIGIT_SC                    143
+#define IDB_DIGIT_SP                    144
 #define IDC_SCHEDULE_LIST               1000
 #define IDC_STATUS_VTR0                 1001
 #define IDC_STATUS_VTR2                 1002
@@ -41,6 +54,15 @@
 #define IDC_STATUS_VTR7                 1022
 #define IDC_ICON_VTR_SYS_ALARM          1023
 #define IDC_ICON_VTR_SYS_SVO_ALARM      1023
+#define IDC_STATIC_DIGIT                1024
+#define IDC_TC_VTR_HH_X0                1100
+#define IDC_TC_VTR_HH_0X                1101
+#define IDC_TC_VTR_MM_X0                1102
+#define IDC_TC_VTR_MM_0X                1103
+#define IDC_TC_VTR_SS_X0                1104
+#define IDC_TC_VTR_SS_0X                1105
+#define IDC_TC_VTR_FF_X0                1106
+#define IDC_TC_VTR_FF_0X                1107
 #define ID_PROGRAM_SHOW                 32771
 #define ID_PROGRAM_HIDE                 32772
 #define ID_PROGRAM_EXIT                 32773
@@ -50,9 +72,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32776
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

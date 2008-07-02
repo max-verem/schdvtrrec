@@ -265,6 +265,53 @@ void CSchdVtrRecDlg::UpdateStatus(void)
 	s->SetIcon((theApp.vtr_state & VTR_SYS_SVO_ALARM)?m_icon_ok:m_icon_fail);
 };
 
+void CSchdVtrRecDlg::update_tc(char* tc)
+{
+    unsigned long tc_bcd;
+    int i, j;
+
+    static int lcd_digits_map[8] = 
+    {
+        IDC_TC_VTR_HH_X0,
+        IDC_TC_VTR_HH_0X,
+        IDC_TC_VTR_MM_X0,
+        IDC_TC_VTR_MM_0X,
+        IDC_TC_VTR_SS_X0,
+        IDC_TC_VTR_SS_0X,
+        IDC_TC_VTR_FF_X0,
+        IDC_TC_VTR_FF_0X
+    };
+
+    /* check if submitted value defined */
+    if
+    (
+        (NULL == tc)
+        ||
+        (0 == tc[0])
+    )
+        tc_bcd = 0xAAAAAAAA;
+    else
+        tc_bcd = tc_txt2bcd(tc);
+
+    /* setup digits */
+    for(i = 0; i<8; i++)
+    {
+        /*
+            Find index 
+            0: 28
+            1: 24
+            2: 20
+            3: 16
+            .....
+        */
+        j = 0x0000000F & (tc_bcd >> (28 - 4*i));
+
+        /* set digit */
+        ((CStatic*)GetDlgItem(lcd_digits_map[i]))
+            ->SetBitmap(m_digits_bitmaps[j]);
+    };
+};
+
 void CSchdVtrRecDlg::UpdateTC(void)
 {
 	char TC[128];
@@ -274,7 +321,7 @@ void CSchdVtrRecDlg::UpdateTC(void)
 	else
 		TC[0] = 0;
 
-	((CStatic*)GetDlgItem(IDC_TC))->SetWindowText(TC);
+    update_tc(TC);
 };
 
 /* --------------------------------------------------------------------------
@@ -443,13 +490,50 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CSchdVtrRecDlg dialog
 
+CSchdVtrRecDlg::~CSchdVtrRecDlg()
+{
+    int i;
+
+    /* free loaded objects */
+    for(i = 0; i<11; i++)
+        if(NULL != m_digits_bitmaps[i])
+            ::DeleteObject(m_digits_bitmaps[i]);
+
+};
+
 CSchdVtrRecDlg::CSchdVtrRecDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSchdVtrRecDlg::IDD, pParent)
 {
+    int i;
+
 	//{{AFX_DATA_INIT(CSchdVtrRecDlg)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
+
+    /* define ids of LCD DIGITS bitmaps */
+    static int digits_ids[16] = 
+    {
+        IDB_DIGIT_0,
+        IDB_DIGIT_1,
+        IDB_DIGIT_2,
+        IDB_DIGIT_3,
+        IDB_DIGIT_4,
+        IDB_DIGIT_5,
+        IDB_DIGIT_6,
+        IDB_DIGIT_7,
+        IDB_DIGIT_8,
+        IDB_DIGIT_9
+    };
+
+    /* load digits bitmaps */
+    for(i = 0; i<11; i++)
+        m_digits_bitmaps[i] = ::LoadBitmap
+        (
+            AfxGetResourceHandle(), 
+            MAKEINTRESOURCE( (i<10)?digits_ids[i]:IDB_DIGIT_SP)
+        );
+
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_icon_ok = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_OK);
 	m_icon_fail = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_FAIL);

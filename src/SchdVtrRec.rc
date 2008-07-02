@@ -88,6 +88,24 @@ BEGIN
     END
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_DIGIT_SP            BITMAP  DISCARDABLE     "res\\digits\\SP.bmp"
+IDB_DIGIT_0             BITMAP  DISCARDABLE     "res\\digits\\0.bmp"
+IDB_DIGIT_1             BITMAP  DISCARDABLE     "res\\digits\\1.bmp"
+IDB_DIGIT_2             BITMAP  DISCARDABLE     "res\\digits\\2.bmp"
+IDB_DIGIT_3             BITMAP  DISCARDABLE     "res\\digits\\3.bmp"
+IDB_DIGIT_4             BITMAP  DISCARDABLE     "res\\digits\\4.bmp"
+IDB_DIGIT_5             BITMAP  DISCARDABLE     "res\\digits\\5.bmp"
+IDB_DIGIT_6             BITMAP  DISCARDABLE     "res\\digits\\6.bmp"
+IDB_DIGIT_7             BITMAP  DISCARDABLE     "res\\digits\\7.bmp"
+IDB_DIGIT_8             BITMAP  DISCARDABLE     "res\\digits\\8.bmp"
+IDB_DIGIT_9             BITMAP  DISCARDABLE     "res\\digits\\9.bmp"
+IDB_DIGIT_SC            BITMAP  DISCARDABLE     "res\\digits\\SC.bmp"
 #endif    // Unknown language: 0x22, 0x1 resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -138,21 +156,20 @@ BEGIN
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,130,415,111
     CONTROL         "VTR CONNECTED",IDC_STATUS_VTR0,"Static",
                     SS_LEFTNOWORDWRAP | WS_GROUP,216,20,70,8
-    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_ONLINE,188,15,21,
+    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_ONLINE,188,15,20,
                     20,SS_REALSIZEIMAGE
     CONTROL         "TAPE LOADED",IDC_STATUS_VTR2,"Static",SS_LEFTNOWORDWRAP | 
                     WS_GROUP,216,45,59,8
     ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_TAPE_LOADED,188,40,
-                    21,20
+                    20,20
     CONTROL         "RECORD NOT INHIBITED",IDC_STATUS_VTR3,"Static",
                     SS_LEFTNOWORDWRAP | WS_GROUP,216,70,85,8
     ICON            IDI_ICON_VTR_STATUS_FAIL,
-                    IDC_ICON_VTR_RECORD_NOT_INHIBITED,188,65,21,20
+                    IDC_ICON_VTR_RECORD_NOT_INHIBITED,188,65,20,20
     CONTROL         "REMOTE CONTROL",IDC_STATUS_VTR4,"Static",
                     SS_LEFTNOWORDWRAP | WS_GROUP,216,95,79,8
     ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_REMOTE_CONTROL,188,
-                    90,21,20
-    CTEXT           "00:00:00:00",IDC_TC,53,45,84,8
+                    90,20,20
     PUSHBUTTON      "<=",IDC_BUTTON_REWIND,41,80,21,14,BS_FLAT
     PUSHBUTTON      "[  ]",IDC_BUTTON_STOP,67,80,21,14,BS_FLAT
     PUSHBUTTON      ">",IDC_BUTTON_PLAY,93,80,21,14,BS_FLAT
@@ -161,20 +178,31 @@ BEGIN
     PUSHBUTTON      "^",IDC_BUTTON_EJECT,15,80,21,14,BS_FLAT
     CONTROL         "EOT (End Of Tape)",IDC_STATUS_VTR1,"Static",
                     SS_LEFTNOWORDWRAP | WS_GROUP,335,20,73,8
-    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_EOT,307,14,21,20,
+    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_EOT,307,14,20,20,
                     SS_REALSIZEIMAGE
     CONTROL         "NEAR EOT",IDC_STATUS_VTR5,"Static",SS_LEFTNOWORDWRAP | 
                     WS_GROUP,335,44,47,8
-    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_NEAR_EOT,307,39,21,
+    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_NEAR_EOT,307,39,20,
                     20
     CONTROL         "EJECTING",IDC_STATUS_VTR6,"Static",SS_LEFTNOWORDWRAP | 
                     WS_GROUP,335,70,42,8
-    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_EJECTING,307,65,21,
+    ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_EJECTING,307,65,20,
                     20
     CONTROL         "SYS/SVO ALARM",IDC_STATUS_VTR7,"Static",
                     SS_LEFTNOWORDWRAP | WS_GROUP,335,94,58,8
     ICON            IDI_ICON_VTR_STATUS_FAIL,IDC_ICON_VTR_SYS_SVO_ALARM,307,
-                    89,21,20
+                    89,20,20
+    CONTROL         133,IDC_TC_VTR_HH_X0,"Static",SS_BITMAP,21,35,15,25
+    CONTROL         133,IDC_TC_VTR_HH_0X,"Static",SS_BITMAP,36,35,15,25
+    CONTROL         133,IDC_TC_VTR_MM_X0,"Static",SS_BITMAP,56,35,15,25
+    CONTROL         133,IDC_TC_VTR_MM_0X,"Static",SS_BITMAP,71,35,15,25
+    CONTROL         133,IDC_TC_VTR_SS_X0,"Static",SS_BITMAP,90,35,15,25
+    CONTROL         133,IDC_TC_VTR_SS_0X,"Static",SS_BITMAP,105,35,15,25
+    CONTROL         133,IDC_TC_VTR_FF_X0,"Static",SS_BITMAP,124,35,15,25
+    CONTROL         133,IDC_TC_VTR_FF_0X,"Static",SS_BITMAP,139,35,15,25
+    CONTROL         143,IDC_STATIC,"Static",SS_BITMAP,51,35,5,25
+    CONTROL         143,IDC_STATIC,"Static",SS_BITMAP,86,35,5,25
+    CONTROL         143,IDC_STATIC,"Static",SS_BITMAP,120,35,5,25
 END
 
 
