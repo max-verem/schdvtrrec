@@ -16,14 +16,17 @@ class CSchdVtrRecDlg : public CDialog
 	char title[1024];
 	HANDLE monitor_thread;
 	unsigned long monitor_id;
+    HBITMAP m_digits_bitmaps[16];
 
 // Construction
 public:
 	void show_window_on_failed_status();
 	CSchdVtrRecDlg(CWnd* pParent = NULL);	// standard constructor
+	virtual ~CSchdVtrRecDlg();
 
 	void UpdateStatus(void);
 	void UpdateTC(void);
+    void update_tc(char* tc);
 
 	void record_stop();
 	void record_start();
