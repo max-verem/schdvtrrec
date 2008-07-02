@@ -23,6 +23,7 @@
 #define IDB_DIGIT_9                     142
 #define IDB_DIGIT_SC                    143
 #define IDB_DIGIT_SP                    144
+#define IDR_ACCELERATORS                146
 #define IDC_SCHEDULE_LIST               1000
 #define IDC_STATUS_VTR0                 1001
 #define IDC_STATUS_VTR2                 1002
@@ -72,7 +73,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_RESOURCE_VALUE        147
 #define _APS_NEXT_COMMAND_VALUE         32776
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           101
