@@ -537,6 +537,14 @@ CSchdVtrRecDlg::CSchdVtrRecDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_icon_ok = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_OK);
 	m_icon_fail = AfxGetApp()->LoadIcon(IDI_ICON_VTR_STATUS_FAIL);
+
+    /* load accelerator */
+    int nIDAccel = IDR_ACCELERATORS;
+	m_hAccel = ::LoadAccelerators
+	(
+		AfxGetInstanceHandle(),
+		MAKEINTRESOURCE(nIDAccel)
+	); 
 }
 
 void CSchdVtrRecDlg::DoDataExchange(CDataExchange* pDX)
@@ -993,4 +1001,11 @@ void CSchdVtrRecDlg::show_window_on_failed_status()
 			| VTR_EOT | VTR_NEAR_EOT | VTR_EJECTING | VTR_SYS_SVO_ALARM)
 	)
 		ShowWindow(SW_SHOW);
+}
+
+BOOL CSchdVtrRecDlg::PreTranslateMessage(MSG* pMsg) 
+{
+    if( TranslateAccelerator( m_hWnd, m_hAccel, pMsg ) ) return TRUE;
+
+    return CDialog::PreTranslateMessage(pMsg);
 }

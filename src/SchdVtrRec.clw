@@ -12,13 +12,14 @@ Class1=CSchdVtrRecApp
 Class2=CSchdVtrRecDlg
 Class3=CAboutDlg
 
-ResourceCount=6
+ResourceCount=7
 Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
 Resource3=IDD_SCHDVTRREC_DIALOG
-Resource4=IDR_MENU
-Resource5=IDD_ABOUTBOX (English (U.S.))
+Resource4=IDD_ABOUTBOX (English (U.S.))
+Resource5=IDR_MENU
 Resource6=IDD_SCHDVTRREC_DIALOG (English (U.S.))
+Resource7=IDR_ACCELERATORS
 
 [CLS:CSchdVtrRecApp]
 Type=0
@@ -119,4 +120,12 @@ Command2=ID_PROGRAM_HIDE
 Command3=ID_PROGRAM_EXIT
 Command4=ID_PROGRAM_ABOUT
 CommandCount=4
+
+[ACL:IDR_ACCELERATORS]
+Type=1
+Class=?
+Command1=IDC_BUTTON_EJECT
+Command2=IDC_BUTTON_STOP
+Command3=IDC_BUTTON_RECORD
+CommandCount=3
 

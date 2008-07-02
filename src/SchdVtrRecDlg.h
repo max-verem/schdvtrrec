@@ -17,6 +17,7 @@ class CSchdVtrRecDlg : public CDialog
 	HANDLE monitor_thread;
 	unsigned long monitor_id;
     HBITMAP m_digits_bitmaps[16];
+    HACCEL m_hAccel;
 
 // Construction
 public:
@@ -70,6 +71,7 @@ protected:
 	afx_msg BOOL OnMenuCommand(int id);
 	afx_msg BOOL OnVtrControlCommand(int id);
 	afx_msg void OnScheduleListGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult);
+	BOOL PreTranslateMessage(MSG* pMsg);
 	DECLARE_MESSAGE_MAP()
 };
 

@@ -106,6 +106,19 @@ IDB_DIGIT_7             BITMAP  DISCARDABLE     "res\\digits\\7.bmp"
 IDB_DIGIT_8             BITMAP  DISCARDABLE     "res\\digits\\8.bmp"
 IDB_DIGIT_9             BITMAP  DISCARDABLE     "res\\digits\\9.bmp"
 IDB_DIGIT_SC            BITMAP  DISCARDABLE     "res\\digits\\SC.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATORS ACCELERATORS DISCARDABLE 
+BEGIN
+    VK_F10,         IDC_BUTTON_EJECT,       VIRTKEY, NOINVERT
+    VK_F11,         IDC_BUTTON_STOP,        VIRTKEY, NOINVERT
+    VK_F12,         IDC_BUTTON_RECORD,      VIRTKEY, NOINVERT
+END
+
 #endif    // Unknown language: 0x22, 0x1 resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -130,9 +143,9 @@ CAPTION "About SchdVtrRec"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
-    LTEXT           "SchdVtrRec Version 1.0 (r-18)",IDC_STATIC,39,15,119,8,
+    LTEXT           "SchdVtrRec Version 1.0 (r-23)",IDC_STATIC,39,15,119,8,
                     SS_NOPREFIX
-    LTEXT           "Copyright (C) 2007 Maksym Veremeyenko. (verem@m1.tv)",
+    LTEXT           "Copyright (C) 2008 Maksym Veremeyenko. (verem@m1.tv)",
                     IDC_STATIC,7,32,242,8
     DEFPUSHBUTTON   "OK",IDOK,199,7,50,14,WS_GROUP
     LTEXT           "Usage:\n    SchdVtrRec.exe [/p <COM?:>] [/s <schedule file>] [/a <alert time>]",
