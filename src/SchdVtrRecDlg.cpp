@@ -957,6 +957,9 @@ void CSchdVtrRecDlg::record_start()
 	/* local */
 	rtime = localtime( &ltime );
 
+    if(theApp.m_opts.m_setup_tc)
+    {
+
 	/* setup users bit */
 	d = 
 		(DEC2BCD( (rtime->tm_year + 1900) / 100 ) << 24)
@@ -980,7 +983,7 @@ void CSchdVtrRecDlg::record_start()
 		(DEC2BCD( (timeGetTime() % 1000) / 30) << 0);
 
 	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_TIME_CODE_PRESET, d);
-
+    };
 
 	/* record */
 	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_RECORD);

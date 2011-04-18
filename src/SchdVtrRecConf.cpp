@@ -22,6 +22,7 @@ CSchdVtrRecConf::CSchdVtrRecConf()
 	strcpy(m_serial_port_name, DEFAULT_SERIAL_PORT);
 	strcpy(m_schedule_file_name, DEFAULT_SCHEDULE_FILE);
 	m_alert_before = DEFAULT_ALERT_TIME;
+    m_setup_tc = 0;
 	opt = 0;
 }
 
@@ -35,6 +36,7 @@ CSchdVtrRecConf::CSchdVtrRecConf()
 enum CSchdVtrRecConfOpt
 {
 	optNone = 0,
+    optSetupTC,
 	optSerialPortName,
 	optScheduleFileName,
 	optAlertTime
@@ -46,6 +48,7 @@ static struct
 	int id;
 } opts[] = 
 {
+    {"tc",          optSetupTC},
 	{"port",		optSerialPortName},
 	{"p",			optSerialPortName},
 	{"schedule",	optScheduleFileName},
@@ -71,6 +74,10 @@ void CSchdVtrRecConf::ParseParam(const TCHAR* pszParam, BOOL bFlag, BOOL bLast)
 		/* check what option was previously */
 		switch(opt)
 		{
+            case optSetupTC:
+                this->m_setup_tc = atol((char*)pszParam);
+                break;
+
 			case optAlertTime:
 				this->m_alert_before = atol((char*)pszParam);
 				break;

@@ -20,6 +20,7 @@ public:
 	char m_serial_port_name[1024];
 	char m_schedule_file_name[1024];
 	unsigned long m_alert_before;
+    unsigned long m_setup_tc;
 
 	CSchdVtrRecConf();
 
