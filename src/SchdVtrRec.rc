@@ -147,7 +147,7 @@ BEGIN
     LTEXT           "Copyright (C) 2010 Maksym Veremeyenko. (verem@m1.tv)",IDC_STATIC,7,32,280,8
     DEFPUSHBUTTON   "OK",IDOK,237,7,50,14,WS_GROUP
     LTEXT           "Usage:\n    SchdVtrRec.exe [/p <COM?:>] [/s <schedule file>] [/a <alert time>][/tc <0|1>]",IDC_STATIC,7,52,280,21
-    LTEXT           "Where:\n    <COM?:> - Serial port name (COM1: is default)\n    <schedule file> - schedule file (SchdVtrRec.ini is default)\n    <alert time> - number of seconds before next record to alert of status fail\n    <0|1> - disable or enable timecode preset, disabled by default",IDC_STATIC,7,73,280,49
+    LTEXT           "Where:\n    <COM?:> - Serial port name (COM1: is default)\n    <schedule file> - schedule file (SchdVtrRec.ini is default)\n    <alert time> - number of seconds before next record to alert of status fail\n    <0|1> - disable or enable timecode preset",IDC_STATIC,7,73,280,49
 END
 
 IDD_SCHDVTRREC_DIALOG DIALOGEX 0, 0, 436, 250
