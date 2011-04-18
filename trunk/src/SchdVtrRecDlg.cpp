@@ -959,30 +959,29 @@ void CSchdVtrRecDlg::record_start()
 
     if(theApp.m_opts.m_setup_tc)
     {
+        /* setup users bit */
+        d = 
+            (DEC2BCD( (rtime->tm_year + 1900) / 100 ) << 24)
+            |
+            (DEC2BCD( (rtime->tm_year + 1900) % 100 ) << 16)
+            |
+            (DEC2BCD( (rtime->tm_mon + 1) ) << 8)
+            |
+            (DEC2BCD(rtime->tm_mday ) << 0);
 
-	/* setup users bit */
-	d = 
-		(DEC2BCD( (rtime->tm_year + 1900) / 100 ) << 24)
-		|
-		(DEC2BCD( (rtime->tm_year + 1900) % 100 ) << 16)
-		|
-		(DEC2BCD( (rtime->tm_mon + 1) ) << 8)
-		|
-		(DEC2BCD(rtime->tm_mday ) << 0);
+        vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_USER_BIT_PRESET, d);
 
-	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_USER_BIT_PRESET, d);
+        /* setup timecode */
+        d = 
+            (DEC2BCD( rtime->tm_hour ) << 24)
+            |
+            (DEC2BCD( rtime->tm_min ) << 16)
+            |
+            (DEC2BCD( rtime->tm_sec ) << 8)
+            |
+            (DEC2BCD( (timeGetTime() % 1000) / 30) << 0);
 
-	/* setup timecode */
-	d = 
-		(DEC2BCD( rtime->tm_hour ) << 24)
-		|
-		(DEC2BCD( rtime->tm_min ) << 16)
-		|
-		(DEC2BCD( rtime->tm_sec ) << 8)
-		|
-		(DEC2BCD( (timeGetTime() % 1000) / 30) << 0);
-
-	vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_TIME_CODE_PRESET, d);
+        vtr_srv_send_cmd_sync(theApp.vtr, NULL, VTR_CMD_TIME_CODE_PRESET, d);
     };
 
 	/* record */
