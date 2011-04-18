@@ -63,7 +63,7 @@ void CSchdVtrRecConf::ParseParam(const TCHAR* pszParam, BOOL bFlag, BOOL bLast)
 	if(bFlag)
 	{
 		for(opt = optNone, i = 0; (NULL != opts[i].name) && (optNone == opt); i++)
-			if(0 == stricmp(pszParam, opts[i].name))
+            if(0 == _stricmp(pszParam, opts[i].name))
 				opt = opts[i].id;
 	}
 	else

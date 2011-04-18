@@ -39,7 +39,7 @@ CSchdVtrRecIni::CSchdVtrRecIni(char* filename)
 	COUNT = 0;
 
 	/* compose filename */
-	if(0 == stricmp(filename, DEFAULT_SCHEDULE_FILE))
+	if(0 == _stricmp(filename, DEFAULT_SCHEDULE_FILE))
 	{
 		GetModuleFileName(AfxGetInstanceHandle(), l, MAX_STRING_LEN);
 		for(i = strlen(l) - 1; i>=0; i--)

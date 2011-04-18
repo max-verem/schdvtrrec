@@ -759,7 +759,7 @@ HCURSOR CSchdVtrRecDlg::OnQueryDragIcon()
 
 -------------------------------------------------------------------------- */
 
-BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
+BOOL CSchdVtrRecDlg::OnVtrControlCommand(UINT id)
 {
 	BOOL ret = FALSE;
 	int cmd, r = 0;
@@ -803,7 +803,7 @@ BOOL CSchdVtrRecDlg::OnVtrControlCommand(int id)
 };
 
 
-BOOL CSchdVtrRecDlg::OnMenuCommand(int id)
+BOOL CSchdVtrRecDlg::OnMenuCommand(UINT id)
 {
 	BOOL ret = FALSE;
 
